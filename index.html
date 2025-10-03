@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kira Intro</title>
+  <style>
+    :root {
+      --bg: #0b0b0b;
+      --fg: #ffffff;
+      --accent: #ff3333;
+      --muted: #9aa0a6;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    .wrap {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+      padding: 24px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--fg);
+    }
+    .hint {
+      font-size: .95rem;
+      color: var(--muted);
+    }
+    video {
+      width: min(92vw, 800px);
+      height: auto;
+      border-radius: 16px;
+      outline: none;
+      box-shadow: 0 8px 40px rgba(0,0,0,.6);
+      background: #000;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform .15s ease, opacity .15s ease;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--fg);
+    }
+    .btn:hover { transform: translateY(-1px); opacity: .95; }
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    .hidden { display: none; }
+    footer {
+      margin-top: 12px;
+      font-size: .85rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Đang phát intro…</h1>
+    <div class="hint">Bạn có thể bấm “Bỏ qua” để sang kênh YouTube.</div>
+
+    <!-- Place INTRO.mp4 in the same folder as this HTML -->
+    <video id="introVideo" playsinline controls autoplay>
+      <source src="INTRO.mp4" type="video/mp4" />
+      Trình duyệt của bạn không hỗ trợ phát video.
+    </video>
+
+    <div class="actions">
+      <a id="skipBtn" class="btn" href="https://www.youtube.com/channel/UCLxxK8nn6nf6RPdkaJqTOYg">Bỏ qua </a>
+      <a id="ytBtn" class="btn btn-primary hidden" href="https://www.youtube.com/channel/UCLxxK8nn6nf6RPdkaJqTOYg">Đi đến kênh YouTube</a>
+    </div>
+
+    <footer>© 2025 Kira Art - Nguyễn Đức An</footer>
+  </div>
+
+  <script>
+    const video = document.getElementById('introVideo');
+    const ytBtn = document.getElementById('ytBtn');
+
+    // When video ends, reveal the YouTube button
+    video.addEventListener('ended', () => { ytBtn.classList.remove('hidden'); });
+
+    // Mobile autoplay hint: if autoplay is blocked, try play on first user gesture
+    document.addEventListener('touchstart', () => { if (video.paused) video.play().catch(()=>{{}}); }, { once: true });
+  </script>
+</body>
+</html>
