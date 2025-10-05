@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kira Intro</title>
+  <title>Kira Intro + Auto Move</title>
   <style>
     :root {
       --bg: #0b0b0b;
@@ -17,7 +17,7 @@
       background: var(--bg);
       color: var(--fg);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";
-      overflow: hidden;
+      overflow: hidden; /* giữ hình không tràn ra ngoài */
     }
     .wrap {
       min-height: 100%;
@@ -28,6 +28,8 @@
       gap: 20px;
       padding: 24px;
       text-align: center;
+      position: relative;
+      z-index: 1; /* nội dung ở dưới hai Kira bay phía trên */
     }
     h1 {
       font-size: 1.25rem;
@@ -79,35 +81,103 @@
       color: var(--muted);
     }
 
-    /* === Nhân vật Kira === */
-    #kira {
+    /* ====== Kira tầng trên (hai nhân vật bay qua lại) ====== */
+    .sky {
       position: fixed;
-      width: 180px;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      transition: transform 1s ease-in-out;
-      z-index: 9999;
-      cursor: pointer;
-      user-select: none;
-      display: none;
-      filter: drop-shadow(0 0 12px gold);
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 45vh;             /* khu vực bầu trời */
+      pointer-events: none;     /* không cản nhấp chuột vào nội dung */
+      z-index: 2;
     }
-    #kira:hover {
-      filter: drop-shadow(0 0 20px #ffcf33);
+    .kira-fly {
+      position: absolute;
+      width: clamp(120px, 14vw, 220px);
+      filter: drop-shadow(0 0 12px rgba(255, 207, 51, .8));
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+      will-change: transform;
+    }
+    /* Kira 1: chạy trái -> phải -> trái (qua lại) */
+    .kira-1 {
+      top: 18%;
+      animation-name: slideX1, bob1;
+      animation-duration: 8s, 2.2s;
+      animation-direction: alternate, alternate;
+    }
+    /* Kira 2: lệch pha & tốc độ khác */
+    .kira-2 {
+      top: 55%;
+      animation-name: slideX2, bob2;
+      animation-duration: 10s, 2.6s;
+      animation-direction: alternate-reverse, alternate;
+    }
+    /* chuyển động ngang */
+    @keyframes slideX1 {
+      0%   { transform: translateX(-15vw) rotate(-6deg); }
+      100% { transform: translateX(85vw) rotate(6deg); }
+    }
+    @keyframes slideX2 {
+      0%   { transform: translateX(90vw) rotate(6deg) scale(0.95); }
+      100% { transform: translateX(-10vw) rotate(-6deg) scale(1.05); }
+    }
+    /* nhún lên xuống nhẹ để sống động */
+    @keyframes bob1 {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-10px); }
+    }
+    @keyframes bob2 {
+      from { transform: translateY(0); }
+      to   { transform: translateY(12px); }
     }
 
-    /* Hiệu ứng Kira nhún nhảy nhẹ */
-    @keyframes float {
-      from { transform: translateY(0); }
-      to { transform: translateY(-10px); }
+    /* ====== Kira chào ở dưới ====== */
+    .greeter {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      gap: 8px;
+      pointer-events: none; /* chỉ hiển thị, không cản trở thao tác */
     }
-    #kira.floating {
-      animation: float 2s ease-in-out infinite alternate;
+    .kira-greet {
+      width: clamp(140px, 18vw, 220px);
+      /* mô phỏng vẫy tay bằng nghiêng người + điểm xoay lệch về bên phải */
+      transform-origin: 70% 50%;
+      animation: wave 1.3s ease-in-out infinite alternate, float 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 10px rgba(255, 207, 51, .9));
+    }
+    @keyframes wave {
+      0%   { transform: rotate(-5deg); }
+      100% { transform: rotate(7deg); }
+    }
+    @keyframes float {
+      0%   { margin-top: 0; }
+      100% { margin-top: -6px; }
+    }
+    .greeter .bubble {
+      font-size: .95rem;
+      color: #ffd966;
+      background: rgba(255,255,255,.08);
+      padding: 6px 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 999px;
     }
   </style>
 </head>
 <body>
+  <!-- Hai Kira bay ở phía trên -->
+  <div class="sky">
+    <img class="kira-fly kira-1" src="KIRA VUI MỪNG.png" alt="Kira bay 1" />
+    <img class="kira-fly kira-2" src="KIRA VUI MỪNG.png" alt="Kira bay 2" />
+  </div>
+
+  <!-- Nội dung sẵn có -->
   <div class="wrap">
     <h1>Đang phát intro…</h1>
     <div class="hint">Bạn có thể bấm “Bỏ qua” để sang kênh YouTube.</div>
@@ -120,44 +190,24 @@
     <div class="actions">
       <a id="skipBtn" class="btn" href="https://www.youtube.com/channel/UCLxxK8nn6nf6RPdkaJqTOYg">Bỏ qua</a>
       <a id="ytBtn" class="btn btn-primary hidden" href="https://www.youtube.com/channel/UCLxxK8nn6nf6RPdkaJqTOYg">Đi đến kênh YouTube</a>
-      <button id="moveBtn" class="btn btn-primary">✨ Kira di chuyển ✨</button>
     </div>
 
     <footer>© 2025 Kira Art - Nguyễn Đức An</footer>
   </div>
 
-  <!-- Nhân vật Kira -->
-  <img id="kira" src="KIRA VUI MỪNG.png" alt="Kira vui mừng" />
+  <!-- Kira chào ở phía dưới -->
+  <div class="greeter">
+    <img class="kira-greet" src="KIRA VUI MỪNG.png" alt="Kira vẫy tay chào" />
+    <div class="bubble">Xin chào!Follow Kira để xem những video vui vẻ và những bài học hữu ích nhé!</div>
+  </div>
 
   <script>
+    // Phần video như cũ
     const video = document.getElementById('introVideo');
     const ytBtn = document.getElementById('ytBtn');
-    const kira = document.getElementById('kira');
-    const moveBtn = document.getElementById('moveBtn');
 
-    // Khi video kết thúc, hiện nút YouTube
     video.addEventListener('ended', () => { ytBtn.classList.remove('hidden'); });
-
-    // Nếu autoplay bị chặn, kích hoạt khi chạm đầu tiên
     document.addEventListener('touchstart', () => { if (video.paused) video.play().catch(()=>{}); }, { once: true });
-
-    // Nút cho Kira di chuyển
-    moveBtn.addEventListener('click', () => {
-      kira.style.display = 'block';
-      kira.classList.add('floating');
-      moveRandomly();
-      // Cứ 3 giây đổi vị trí
-      setInterval(moveRandomly, 3000);
-    });
-
-    function moveRandomly() {
-      const x = Math.random() * (window.innerWidth - 200);
-      const y = Math.random() * (window.innerHeight - 200);
-      kira.style.transform = `translate(${x}px, ${y}px) rotate(${Math.random() * 20 - 10}deg)`;
-    }
-
-    // Cho phép click vào Kira đổi vị trí ngay
-    kira.addEventListener('click', moveRandomly);
   </script>
 </body>
 </html>
